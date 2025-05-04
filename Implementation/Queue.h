@@ -19,7 +19,7 @@ public:
     T& peek();          
     const T& peek() const;             
    
-    bool empty() const;
+    bool isEmpty() const;
     int size() const;
 
     private:
