@@ -50,7 +50,7 @@ Queue<T>& Queue<T>::operator=(const Queue& other)
 template <typename T>
 void Queue<T>::enqueue(const T& item)
 {
-    Node<T> node = new Node<T>(item);
+    Node<T>* node = new Node<T>(item);
 
     if(tail == nullptr)
     {
@@ -73,6 +73,7 @@ void Queue<T>::dequeue()
     if(isEmpty())
     {
         cout << "Error: Dequeue on empty queue" << endl;
+        return;
     }
 
     Node<T>* dequeued = head;
@@ -94,6 +95,7 @@ T& Queue<T>::peek()
     if (isEmpty())
     {
         cout << "Error: Peek on empty queue" << endl;
+        return;
     }
     return head->data;
 
@@ -105,6 +107,7 @@ const T& Queue<T>::peek() const
     if (isEmpty())
     {
         cout << "Error: Peek on empty queue" << endl;
+        return;
     }
     return head->data;
 
@@ -129,7 +132,7 @@ void Queue<T>::clear()
     {
         Node<T>* next = head->next;
         delete head;
-        head = nxt;
+        head = next;
     }
 
     tail   = nullptr;

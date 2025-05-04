@@ -10,8 +10,14 @@ public:
     Queue();                                 
     ~Queue();                                  
 
+    //copy - assignment
     Queue(const Queue& other);                 
     Queue& operator=(const Queue& other);      
+
+    //move
+    Queue(Queue&& other) noexcept;
+    Queue& operator=(Queue&& other) noexcept;
+
 
     void enqueue(const T& item);   
     void dequeue();          
@@ -28,6 +34,7 @@ public:
         int length;
 
         void clear();
+        void swap(Queue& other) noexcept;   // <— new helper
 
 };
 

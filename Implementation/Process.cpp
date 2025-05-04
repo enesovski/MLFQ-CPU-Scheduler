@@ -7,7 +7,37 @@ Process::Process(int _pid, int _burst, int _arrivalTime)
     arrivalTime = _arrivalTime;
     remainingTime = burstTime;
     usedQuantum = 0;
+
+    start = -1;  
+    end = -1;
 }
+
+Process::~Process() = default;
+
+Process::Process(const Process& other)
+  : pid(other.pid),
+    burstTime(other.burstTime),
+    remainingTime(other.remainingTime),
+    usedQuantum(other.usedQuantum),
+    arrivalTime(other.arrivalTime),
+    start(other.start),
+    end(other.end)
+{}
+
+
+Process& Process::operator=(const Process& other) {
+    if (this != &other) {
+        pid           = other.pid;
+        burstTime     = other.burstTime;
+        remainingTime = other.remainingTime;
+        usedQuantum   = other.usedQuantum;
+        arrivalTime   = other.arrivalTime;
+        start         = other.start;
+        end           = other.end;
+    }
+    return *this;
+}
+
 
 void Process::useCpu()
 {

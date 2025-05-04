@@ -7,6 +7,9 @@ class Process
         Process(int _pid, int _burstTime, int _arrivalTime);
         ~Process();
 
+        Process(const Process& other);
+        Process& operator=(const Process& other);    
+
         void useCpu();            
         void resetQuantum();
 
