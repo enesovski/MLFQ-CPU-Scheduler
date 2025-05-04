@@ -1,0 +1,34 @@
+#ifndef QUEUE_H
+#define QUEUE_H
+
+#include "Node.h"
+
+template <typename T>
+class Queue
+{
+public:
+    Queue();                                 
+    ~Queue();                                  
+
+    Queue(const Queue& other);                 
+    Queue& operator=(const Queue& other);      
+
+    void enqueue(const T& item);   
+    void dequeue();          
+
+    T& peek();          
+    const T& peek() const;             
+   
+    bool empty() const;
+    int size() const;
+
+    private:
+        Node<T>* head;
+        Node<T>* tail;
+        int length;
+
+        void clear();
+
+};
+
+#endif 
