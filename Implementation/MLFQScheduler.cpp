@@ -114,7 +114,11 @@ void MLFQScheduler::tick(int timeUnits) {
 
 void MLFQScheduler::run() {
   while (!queue1.isEmpty() || !queue2.isEmpty() || !queue3.isEmpty() || currentProcess)
+  {
     tick(1);
+  }
+
+  --clk;
 
   Queue<Process> tmp(finished);
   int n = tmp.size();
@@ -128,13 +132,14 @@ void MLFQScheduler::run() {
   double avgWait = n ? totalWait / n : 0.0;
   double avgTurn = n ? totalTurn / n : 0.0;
 
-  std::cout
+  cout
     << "--- Final Statistics ---\n"
     << "Average Waiting Time: "    << avgWait  << "\n"
     << "Average Turnaround Time: " << avgTurn  << "\n"
-    << "Total Runtime: "           << clk - 1       << "\n"
+    << "Total Runtime: "           << clk       << "\n"
     << "[INFO] All processes have completed execution.\n";
 }
+
 
 void MLFQScheduler::priorityBoost() {
 
