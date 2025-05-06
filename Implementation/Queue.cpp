@@ -2,11 +2,11 @@
 #define QUEUE_CPP
 
 #include "Queue.h"
+#include "Process.h"
 #include <iostream>
 
 using namespace std;
 
-#pragma region Constructors - Destructors
 //DEFAULT CONSTRUCTOR
 template <typename T>
 Queue<T>::Queue() : head(nullptr), tail(nullptr), length(0) {}
@@ -43,8 +43,6 @@ Queue<T>& Queue<T>::operator=(const Queue& other)
 
     return *this;
 }
-
-#pragma endregion
 
 
 template <typename T>
@@ -109,7 +107,6 @@ T& Queue<T>::peek()
     if (isEmpty())
     {
         throw runtime_error("Peek on empty");
-        return;
     }
     return head->data;
 
@@ -121,7 +118,6 @@ const T& Queue<T>::peek() const
     if (isEmpty())
     {
         throw runtime_error("Peek on empty");
-        return;
     }
     return head->data;
 
