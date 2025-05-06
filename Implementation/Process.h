@@ -18,6 +18,7 @@ class Process
         int getPID() const { return pid; }
         int getRemainingTime() const { return remainingTime; }
         int getUsedQuantumTime() const { return usedQuantum; }
+        int getStart() const { return start; }
 
         //SETTERS FOR START - END
         void setStart(int clock);   

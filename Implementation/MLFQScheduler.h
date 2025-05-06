@@ -16,18 +16,15 @@ class MLFQScheduler {
         void printScheduler () const ;
 
     private:
-        //Highest priority
-        Queue<Process> q1;
-        
-        //Medium priority
-        Queue<Process> q2;
-        
-        //Lowest priority
-        Queue<Process> q3;                
+        int quantum1, quantum2;
+        Queue<Process> queue1, queue2, queue3;
+        Process* currentProcess;
+        int currentQueueLevel;      // 1,2 or 3 (queue numbers)
+        int clk;
+        Queue<Process> finished;
 
-        Process* currentProcess;    
-        int clk;   
-
+        void printQueue(const Queue<Process> q) const;
+  
 };
 
 #endif 

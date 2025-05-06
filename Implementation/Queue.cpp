@@ -67,6 +67,8 @@ void Queue<T>::enqueue(const T& item)
 
 }
 
+
+
 template <typename T>
 void Queue<T>::dequeue()
 {
@@ -90,11 +92,23 @@ void Queue<T>::dequeue()
 }
 
 template <typename T>
+void Queue<T>::reEnqueue()
+{
+    if (isEmpty()) 
+        return;     
+
+    T item = peek();
+    dequeue();
+    enqueue(item);
+}
+
+
+template <typename T>
 T& Queue<T>::peek()
 {
     if (isEmpty())
     {
-        cout << "Error: Peek on empty queue" << endl;
+        throw runtime_error("Peek on empty");
         return;
     }
     return head->data;
@@ -106,7 +120,7 @@ const T& Queue<T>::peek() const
 {
     if (isEmpty())
     {
-        cout << "Error: Peek on empty queue" << endl;
+        throw runtime_error("Peek on empty");
         return;
     }
     return head->data;
