@@ -1,6 +1,10 @@
 #ifndef QUEUE_CPP
 #define QUEUE_CPP
 
+//Enes Ceran 
+//ID: 22302324
+//Section 1
+
 #include "Queue.h"
 #include "Process.h"
 #include <iostream>
@@ -35,7 +39,7 @@ Queue<T>& Queue<T>::operator=(const Queue& other)
 {
     if (this == &other)          
         return *this;
-
+    clear();              
     for (Node<T>* cur = other.head; cur != nullptr; cur = cur->next)
     {
         enqueue(cur->data);

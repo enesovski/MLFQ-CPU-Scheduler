@@ -1,21 +1,33 @@
+//Enes Ceran 
+//ID: 22302324
+//Section 1
+
 #include "MLFQScheduler.h"
 #include <iostream>
 
 using namespace std;
 
 MLFQScheduler::MLFQScheduler(const int q1, const int q2)
-  : queue1(), queue2(), queue3(), 
-    finished(),
-    currentQueueLevel(0),
-    quantum1(q1), quantum2(q2),
+  : quantum1(q1), quantum2(q2),
+    queue1(), queue2(), queue3(),
     currentProcess(nullptr),
-    clk(0)
+    currentQueueLevel(0),
+    clk(0),
+    finished()
 {}
 
-MLFQScheduler::~MLFQScheduler() = default;
+
+MLFQScheduler::~MLFQScheduler() {
+  delete currentProcess;
+}
 
 void MLFQScheduler::addProcess(const int pid , const int burstTime)
 {
+  if(burstTime <= 0)
+  {
+    return;
+  }
+
   Process newProcess(pid, burstTime, clk);
   queue1.enqueue(newProcess);
 
@@ -27,88 +39,93 @@ void MLFQScheduler::addProcess(const int pid , const int burstTime)
 
 
 void MLFQScheduler::tick(int timeUnits) {
-  for (int i = 0; i < timeUnits; ++i) {
-    if (currentProcess && currentProcess->isFinished()) {
-      currentProcess->setEnd(clk);
-      finished.enqueue(*currentProcess);
-      delete currentProcess;
-      currentProcess = nullptr;
-    }
+  if (timeUnits <= 0) return;
 
-    if (timeUnits == 1 && currentProcess && !currentProcess->isFinished()) {
-      if (currentQueueLevel == 1
-          && currentProcess->getUsedQuantumTime() == quantum1) {
-        currentProcess->resetQuantum();
-        queue2.enqueue(*currentProcess);
-        delete currentProcess;
-        currentProcess = nullptr;
-      }
-      else if (currentQueueLevel == 2
-               && currentProcess->getUsedQuantumTime() == quantum2) {
-        currentProcess->resetQuantum();
-        queue3.enqueue(*currentProcess);
-        delete currentProcess;
-        currentProcess = nullptr;
-      }
-    }
-
-    if (currentProcess) {
-      bool preempt = (currentQueueLevel == 2 && !queue1.isEmpty())
-                   || (currentQueueLevel == 3 && (!queue1.isEmpty() || !queue2.isEmpty()));
-      if (preempt) {
-        if (currentQueueLevel == 2) queue2.enqueue(*currentProcess);
-        else                     queue3.enqueue(*currentProcess);
-        delete currentProcess;
-        currentProcess = nullptr;
-      }
-    }
-
-    if (!currentProcess) {
-      if (!queue1.isEmpty()) {
-        currentProcess = new Process(queue1.peek());
-        queue1.dequeue();
-        currentQueueLevel = 1;
-      }
-      else if (!queue2.isEmpty()) {
-        currentProcess = new Process(queue2.peek());
-        queue2.dequeue();
-        currentQueueLevel = 2;
-      }
-      else if (!queue3.isEmpty()) {
-        currentProcess = new Process(queue3.peek());
-        queue3.dequeue();
-        currentQueueLevel = 3;
-      }
-      if (currentProcess && currentProcess->getStart() == -1)
-        currentProcess->setStart(clk);
-    }
-
-    if (currentProcess)
-      currentProcess->useCpu();
-    ++clk;
-
-    if (i < timeUnits - 1 && currentProcess) {
-      if (currentProcess->isFinished()) {
+  for(int i = 0; i < timeUnits; i++)
+  {
+    //select process
+   if(currentProcess && currentProcess->isFinished())
+    {
         currentProcess->setEnd(clk);
         finished.enqueue(*currentProcess);
         delete currentProcess;
         currentProcess = nullptr;
-      }
-      else if (currentQueueLevel == 1
-               && currentProcess->getUsedQuantumTime() == quantum1) {
+    }
+    else
+    {
+      if(currentQueueLevel == 1 && currentProcess->getUsedQuantumTime() >= quantum1)
+      {
         currentProcess->resetQuantum();
         queue2.enqueue(*currentProcess);
         delete currentProcess;
         currentProcess = nullptr;
       }
-      else if (currentQueueLevel == 2
-               && currentProcess->getUsedQuantumTime() == quantum2) {
+      if(currentQueueLevel == 2 && currentProcess->getUsedQuantumTime() >= quantum2)
+      {
         currentProcess->resetQuantum();
-        queue3.enqueue(*currentProcess);
+        queue3.enqueue(*currentProcess); 
+      
         delete currentProcess;
         currentProcess = nullptr;
+
       }
     }
+    if(!currentProcess)
+    {
+      //select a process level
+      if(!queue1.isEmpty())
+      {
+        currentProcess = new Process(queue1.peek());
+        currentQueueLevel = 1;
+        queue1.dequeue();
+      }
+      else if(!queue2.isEmpty())
+      {
+        currentProcess = new Process(queue2.peek());
+        currentQueueLevel = 2;
+        queue2.dequeue();
+      }
+      else if(!queue3.isEmpty())
+      {
+        currentProcess = new Process(queue3.peek());
+        currentQueueLevel = 3;
+        queue3.dequeue();
+      }
+
+    }else
+    { 
+      //if queue1 is not empty and current level is 2 or 3, preempty it without resetting quantum
+      
+      if((currentQueueLevel == 2 || currentQueueLevel == 3) && !queue1.isEmpty())
+      {
+        if(currentQueueLevel == 2)
+        {
+          queue2.enqueue(*currentProcess);
+          delete currentProcess;
+          currentProcess = nullptr;
+
+        }
+
+        if(currentQueueLevel == 3)
+        {
+          queue3.enqueue(*currentProcess);
+          delete currentProcess;
+          currentProcess = nullptr;
+        }
+
+        currentProcess = new Process(queue1.peek());
+        currentQueueLevel = 1;
+        queue1.dequeue();
+      }
+    }
+
+    //run selected
+    if(currentProcess)
+    {
+      currentProcess->useCpu();
+    }
+    clk++;
+
   }
 }
 
@@ -118,7 +135,10 @@ void MLFQScheduler::run() {
     tick(1);
   }
 
-  --clk;
+  if(clk > 0)
+  {
+    clk--;
+  }
 
   Queue<Process> tmp(finished);
   int n = tmp.size();
@@ -132,8 +152,7 @@ void MLFQScheduler::run() {
   double avgWait = n ? totalWait / n : 0.0;
   double avgTurn = n ? totalTurn / n : 0.0;
 
-  cout
-    << "--- Final Statistics ---\n"
+  cout << "--- Final Statistics ---\n"
     << "Average Waiting Time: "    << avgWait  << "\n"
     << "Average Turnaround Time: " << avgTurn  << "\n"
     << "Total Runtime: "           << clk       << "\n"
@@ -163,7 +182,7 @@ void MLFQScheduler::priorityBoost() {
     count ++;
   }
 
-  std::cout
+  cout
     << "[INFO] Priority boost performed at clock " << clk
     << ". " << count << " processes boosted to Q1.\n";
 
@@ -211,5 +230,4 @@ void MLFQScheduler::printQueue(Queue<Process> q) const
     cout << " P" << p.getPID();
   }
 }
-
 

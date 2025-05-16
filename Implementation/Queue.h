@@ -1,6 +1,10 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+//Enes Ceran 
+//ID: 22302324
+//Section 1
+
 #include "Node.h"
 
 template <typename T>
